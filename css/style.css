@@ -28,7 +28,7 @@ body{
 .hero-bg{
   position:absolute;
   inset:0;
-  background-image: url('../images/hero.jpg');
+  background-image: url('https://via.placeholder.com/1920x1080');
   background-size:cover;
   background-position:center;
   filter:contrast(0.9) brightness(0.7);
