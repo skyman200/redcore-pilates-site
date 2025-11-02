@@ -2,33 +2,79 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>레드코어 필라테스</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div class="hero">
-    <div class="overlay-left"></div>
-    <div class="content">
-      <h1 class="title">레드코어 필라테스<br/><span class="subtitle">REDCORE PILATES</span></h1>
-
-      <div class="buttons">
-        <a href="yangsan.html" class="btn primary">REDCORE YANGSAN</a>
-        <a href="hwamyoung.html" class="btn secondary">REDCORE HWAMYOUNG</a>
-      </div>
-
-      <nav class="menu">
-        <a href="yangsan.html">PILATES</a>
-        <a href="hwamyoung.html">PHYSIO THERAPY</a>
-        <a href="https://instagram.com/redcorepilates" target="_blank">INSTAGRAM</a>
-      </nav>
-
-      <div class="contact">
-        <p>[레드코어 양산점] 055.367.7985</p>
-        <p>경남 양산시 중산역로 163 재송프라자 605호</p>
-      </div>
+<div class="hero">
+  <div class="overlay-left"></div>
+  <div class="content">
+    <h1 class="title">레드코어 필라테스<br/><span class="subtitle">REDCORE PILATES</span></h1>
+    <div class="buttons">
+      <a href="yangsan.html" class="btn primary">REDCORE YANGSAN</a>
+      <a href="hwamyoung.html" class="btn secondary">REDCORE HWAMYOUNG</a>
     </div>
-    <div class="hero-bg"></div>
+    <nav class="menu">
+      <a href="yangsan.html">PILATES</a>
+      <a href="yangsan.html">PHYSIO THERAPY</a>
+      <a href="https://instagram.com/redcorepilates" target="_blank">INSTAGRAM</a>
+    </nav>
+    <div class="contact">
+      <p>[레드코어 양산점] 055.367.7985</p>
+      <p>경남 양산시 중산연로 163 재송프라자 605호</p>
+    </div>
+    <h2 style="margin-top:20px;">비포 & 애프터</h2>
+    <div id="featured"></div>
   </div>
+  <div class="hero-bg"></div>
+</div>
+<script>
+async function loadFeatured() {
+  try {
+    const feedUrl = 'https://rss.blog.naver.com/redcore2021.xml';
+    const res = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(feedUrl));
+    const data = await res.json();
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(data.contents, 'text/xml');
+    const items = Array.from(xml.querySelectorAll('item'));
+    const filtered = items.filter(item => {
+      const title = item.querySelector('title').textContent;
+      const desc = item.querySelector('description').textContent;
+      return /비포|애프터|before|after/i.test(title + desc);
+    });
+    const posts = filtered.length > 0 ? filtered.slice(0,3) : items.slice(0,3);
+    const featuredDiv = document.getElementById('featured');
+    posts.forEach(item => {
+      const title = item.querySelector('title').textContent;
+      const link = item.querySelector('link').textContent;
+      const desc = item.querySelector('description').textContent;
+      const imgMatch = desc.match(/<img[^>]+src="([^"]+)"/);
+      const imgSrc = imgMatch ? imgMatch[1] : '';
+      const entry = document.createElement('a');
+      entry.href = link;
+      entry.target = '_blank';
+      entry.style.display = 'block';
+      entry.style.margin = '12px 0';
+      if (imgSrc) {
+        const img = document.createElement('img');
+        img.src = imgSrc;
+        img.style.maxWidth = '100%';
+        img.style.borderRadius = '8px';
+        entry.appendChild(img);
+      }
+      const text = document.createElement('div');
+      text.textContent = title;
+      text.style.color = '#ffffff';
+      text.style.margin = '6px 0';
+      entry.appendChild(text);
+      featuredDiv.appendChild(entry);
+    });
+  } catch (error) {
+    console.error('Error loading featured posts', error);
+  }
+}
+loadFeatured();
+</script>
 </body>
 </html>
